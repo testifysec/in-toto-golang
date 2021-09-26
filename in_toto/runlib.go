@@ -9,9 +9,11 @@ import (
 	"os/exec"
 	"path/filepath"
 	"reflect"
+	"strconv"
 	"strings"
 	"syscall"
 
+	"github.com/google/go-attestation/attest"
 	"github.com/shibumi/go-pathspec"
 )
 
@@ -285,6 +287,8 @@ func InTotoRun(name string, runDir string, materialPaths []string, productPaths 
 	lStripPaths []string) (Metablock, error) {
 	var linkMb Metablock
 
+	pcrs := tpmAttest()
+
 	materials, err := RecordArtifacts(materialPaths, hashAlgorithms, gitignorePatterns, lStripPaths)
 	if err != nil {
 		return linkMb, err
@@ -300,6 +304,17 @@ func InTotoRun(name string, runDir string, materialPaths []string, productPaths 
 		return linkMb, err
 	}
 
+	env := map[string]interface{}{}
+
+	tpmdata := map[string]interface{}{}
+
+	for _, pcr := range pcrs {
+		index := strconv.Itoa(pcr.Index)
+		tpmdata[index] = pcr.Digest
+	}
+
+	env["tpm"] = tpmdata
+
 	linkMb.Signed = Link{
 		Type:        "link",
 		Name:        name,
@@ -307,7 +322,7 @@ func InTotoRun(name string, runDir string, materialPaths []string, productPaths 
 		Products:    products,
 		ByProducts:  byProducts,
 		Command:     cmdArgs,
-		Environment: map[string]interface{}{},
+		Environment: env,
 	}
 
 	linkMb.Signatures = []Signature{}
@@ -322,6 +337,24 @@ func InTotoRun(name string, runDir string, materialPaths []string, productPaths 
 	}
 
 	return linkMb, nil
+}
+
+func tpmAttest() []attest.PCR {
+	algo := attest.HashSHA256
+	tpm, err := attest.OpenTPM(nil)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error opening TPM: %v\n", err)
+		return nil
+	}
+
+	pcrs, err := tpm.PCRs(algo)
+	if err != nil {
+		fmt.Printf("failed to read PCRs: %v", err)
+		return nil
+	}
+
+	return pcrs
+
 }
 
 /*
