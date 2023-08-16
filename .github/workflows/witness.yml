@@ -23,6 +23,11 @@ jobs:
       run: |
         GO111MODULE=off go get github.com/mattn/goveralls
         $(go env GOPATH)/bin/goveralls -coverprofile=profile.cov -service=github
-     - name: Install and Build Witness
-     - uses: testifysec/witness-run-action@v0.1.3 
-     - run: go build
+
+    - name: witness hatch build
+      uses: testifysec/witness-run-action@v0.1.3
+      with:
+        step: build
+        enable-archivista: true
+        enable-sigstore: true
+        command: go build
