@@ -24,6 +24,7 @@ jobs:
       uses: testifysec/witness-run-action@v0.1.3
       with:
         step: clone
+        attestations: github environment
         enable-archivista: true
         enable-sigstore: true
         command: /usr/bin/git init ./ && /usr/bin/git remote add origin ${{ github.repositoryUrl }} && /usr/bin/git fetch --no-tags --prune --depth=1 origin +${{ github.sha }}:${{ github.ref }} && /usr/bin/git checkout --force -B ${{ github.ref_name }} ${{ github.ref }}
