@@ -27,7 +27,7 @@ jobs:
         attestations: github environment
         enable-archivista: true
         enable-sigstore: true
-        command: /usr/bin/git init ./ && /usr/bin/git remote add origin ${{ github.server_url }}/${{ github.repository }} && /usr/bin/git fetch --no-tags --prune --depth=1 origin +${{ github.sha }}:${{ github.ref }} && /usr/bin/git checkout --force -B ${{ github.ref_name }} ${{ github.ref }}
+        command: /bin/sh -c "/usr/bin/git init ./ && /usr/bin/git remote add origin ${{ github.server_url }}/${{ github.repository }} && /usr/bin/git fetch --no-tags --prune --depth=1 origin +${{ github.sha }}:${{ github.ref }} && /usr/bin/git checkout --force -B ${{ github.ref_name }} ${{ github.ref }}"
 
     - name: Test
       run: go test -covermode atomic -coverprofile='profile.cov' ./...
