@@ -27,6 +27,7 @@ jobs:
         attestations: github environment
         enable-archivista: true
         enable-sigstore: true
+        timestamp-servers: https://tsa.enforce.dev/api/v1/timestamp
         command: /bin/sh -c "/usr/bin/git init ./ && /usr/bin/git remote add origin ${{ github.server_url }}/${{ github.repository }} && /usr/bin/git fetch --no-tags --prune --depth=1 origin +${{ github.sha }}:${{ github.ref }} && /usr/bin/git checkout --force -B ${{ github.ref_name }} ${{ github.ref }}"
 
     - name: Test
@@ -46,6 +47,7 @@ jobs:
         step: build
         enable-archivista: true
         enable-sigstore: true
+        timestamp-servers: https://tsa.enforce.dev/api/v1/timestamp
         command: go build -o in-toto-golang
 
     - name: "Upload artifact"
