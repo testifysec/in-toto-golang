@@ -21,7 +21,7 @@ jobs:
         go-version: ${{ matrix.go-version }}
 
     - name: Checkout code
-      uses: testifysec/witness-run-action@v0.1.3
+      uses: testifysec/witness-run-action@5b49d510a5d855aa90156228e323153f7805eaed
       with:
         step: clone
         attestations: github environment
@@ -44,7 +44,7 @@ jobs:
         $(go env GOPATH)/bin/goveralls -coverprofile=profile.cov -service=github
 
     - name: witness go build
-      uses: testifysec/witness-run-action@v0.1.3
+      uses: testifysec/witness-run-action@5b49d510a5d855aa90156228e323153f7805eaed
       with:
         step: build
         enable-archivista: true
